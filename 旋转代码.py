@@ -3,7 +3,7 @@ def xuanzhuan(lat,lon,angle):
     noxx=[]
     earth = 6371.004  # km
     ##lon一度的长度(与lat有关)
-    def one_of_lon(lat):
+    def one_of_lon(lat):##因为需要根据实际距离计算地图距离，所以弄了个距离转换的函数
         radius=earth*math.cos(math.radians(lat))
         return math.pi*radius/180
     ##lat一度的长度
@@ -20,7 +20,7 @@ def xuanzhuan(lat,lon,angle):
         for j in range(len(no2[i])):
             a.append(no2[i][j])
         noxx.append(a)
-    def get_position(lat,lon):#可优化
+    def get_position(lat,lon):#查找经纬度数据的位置函数，可根据实际情况和各种算法优化，我懒得弄
         a = 0#a是lat的位置
         b = 0
         for i in range(len(lats)):
@@ -48,25 +48,6 @@ def xuanzhuan(lat,lon,angle):
             b = -1
             exit(-1)
         return a,b
-    # def get_position(lat,lon):#可优化
-    #     a=0#a是lat的位置
-    #     b=0
-    #     for i in lats:
-    #         if(abs(i[0]-lat)<=0.014):#abs(i[0]-lat)<=0.013168
-    #             break
-    #         a=a+1
-    #     if a==len(lats):
-    #         print('查找失败')
-    #         print(lat, lon)
-    #         exit(-1)
-    #         if (abs(i - lon) <=0.018 ):#abs(i - lon) <= 0.017201
-    #             break
-    #         b = b + 1
-    #     if a==len(lats) or b==len(lons[a]):
-    #         print('查找失败')
-    #         print(lat,lon)
-    #         exit(-1)
-    #     return a,b
     def get_coordinate(lat,lon,distance,identifier):#输入坐标和距离lv：为经纬度标志，1代表lat，其它代表lon；输入距离返回经纬度
         if(identifier==1):#右
             result = lon + distance / one_of_lon(lat)
@@ -119,7 +100,7 @@ def xuanzhuan(lat,lon,angle):
                 print('错误')
                 return a, b
         return a,b#返回两个数组，垂直相距3km的位置
-    demo1=[]
+    demo1=[]##所有与这四个数组有关的都是用来标识旋转前的位置用的
     demo2=[]
     demo3=[]
     demo4=[]
@@ -160,7 +141,8 @@ def xuanzhuan(lat,lon,angle):
             new_lat=lat
             new_lat_group.append(new_lat)
             new_lon_group.append(new_lon)
-        for i,j,k,l in zip(local_lat_group,local_lon_group,new_lat_group,new_lon_group):#循环获取坐标数组中每个坐标，依据此坐标调用垂线处理函数
+        #循环获取坐标数组中每个坐标，依据此坐标调用垂线处理函数
+        for i,j,k,l in zip(local_lat_group,local_lon_group,new_lat_group,new_lon_group):
             #调用垂线处理
             chuixian(i,j,k,l,angle,weight,accuracy)
             #直线上数据赋值
@@ -187,8 +169,6 @@ def xuanzhuan(lat,lon,angle):
                 loop3, loop4 = get_position(local_lat, local_lon)
                 no2[loop3][loop4] = nox[loop1][loop2]
                 noxx[loop3][loop4]=1
-            #     no2[loop3][loop4] = a#调试用
-            # a=a+0.0000005#调试用
         #下半部分
         for localangle,newangle in zip(np.arange(0,180+angle,(180+angle)/unit),np.arange(0,180,180/unit)):
             for distance in np.arange(0,radius,accuracy):
@@ -200,8 +180,6 @@ def xuanzhuan(lat,lon,angle):
                 loop3, loop4 = get_position(local_lat, local_lon)
                 no2[loop3][loop4] = nox[loop1][loop2]
                 noxx[loop3][loop4] = 1
-            #     no2[loop3][loop4]=a#调试用
-            # a = a - 0.0000005#调试用
     def main(lat,lon,angle):
         lenth=100#长度
         weight=40#单面宽度
